@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
-
 class CategoryController extends Controller
 {
     /**
@@ -18,7 +17,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return view('category');   
+        $categories = Category::all();
+        return view('category', compact('categories'));
     }
 
     /**
@@ -26,7 +26,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-       
+        //
     }
 
     /**

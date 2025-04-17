@@ -12,7 +12,8 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        return view('transaction');
+        $transactions = Transaction::all();
+        return view('transaction', compact('transactions'));
     }
 
     /**
