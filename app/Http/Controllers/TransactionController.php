@@ -3,64 +3,85 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\TransactionDetail;
+use App\Models\Item;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar semua transaksi.
      */
     public function index()
     {
-        $transactions = Transaction::all();
-        return view('transaction', compact('transactions'));
+        $transactions = Transaction::with('user', 'details.item')->get();
+        return view('transactions.index', compact('transactions'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form tambah transaksi baru.
      */
     public function create()
     {
-        //
+        $items = Item::all(); // Menampilkan semua item untuk dipilih
+        return view('transactions.create', compact('items'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan transaksi baru ke database.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'date' => 'required|date',
+            'total' => 'required|numeric',
+            'pay_total' => 'required|numeric',
+            'items' => 'required|array',
+            'items.*.item_id' => 'required|exists:items,id',
+            'items.*.qty' => 'required|numeric|min:1',
+            'items.*.subtotal' => 'required|numeric|min:0',
+        ]);
+
+        // Simpan transaksi utama
+        $transaction = Transaction::create([
+            'user_id' => $request->user_id,
+            'date' => $request->date,
+            'total' => $request->total,
+            'pay_total' => $request->pay_total,
+        ]);
+
+        // Simpan setiap detail transaksi
+        foreach ($request->items as $item) {
+            TransactionDetail::create([
+                'transaction_id' => $transaction->id,
+                'item_id' => $item['item_id'],
+                'qty' => $item['qty'],
+                'subtotal' => $item['subtotal'],
+            ]);
+        }
+
+        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail dari satu transaksi.
      */
-    public function show(Transaction $transaction)
+    public function show($id)
     {
-        //
+        $transaction = Transaction::with('user', 'details.item')->findOrFail($id);
+        return view('transactions.show', compact('transaction'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * (Opsional) Hapus transaksi.
      */
-    public function edit(Transaction $transaction)
+    public function destroy($id)
     {
-        //
-    }
+        $transaction = Transaction::findOrFail($id);
+        $transaction->details()->delete();
+        $transaction->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Transaction $transaction)
-    {
-        //
+        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus.');
     }
 }

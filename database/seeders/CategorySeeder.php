@@ -16,12 +16,12 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create('id_ID');
+        // $faker = Faker::create('id_ID');
 
-        for ($i=1; $i <= 10 ; $i++) {
-            DB::table('categories')->insert([
-                'name' => $faker->name,
-            ]);
-        };
+        // for ($i=1; $i <= 10 ; $i++) {
+        //     DB::table('categories')->insert([
+        //         'name' => $faker->name,
+        //     ]);
+        // };
     }
 }

@@ -15,15 +15,15 @@ class ItemSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create('id_ID');
+        // $faker = Faker::create('id_ID');
 
-        for ($i = 1; $i <= 10; $i++) {
-            DB::table('items')->insert([
-                'category_id' => $faker->numberBetween(1, 5),
-                'name' => $faker->words(2, true),
-                'price' => $faker->numberBetween(5000, 50000),
-                'stock' => $faker->numberBetween(10, 100),
-            ]);
-        }
+        // for ($i = 1; $i <= 10; $i++) {
+        //     DB::table('items')->insert([
+        //         'category_id' => $faker->numberBetween(1, 5),
+        //         'name' => $faker->words(2, true),
+        //         'price' => $faker->numberBetween(5000, 50000),
+        //         'stock' => $faker->numberBetween(10, 100),
+        //     ]);
+        // }
     }
 }
